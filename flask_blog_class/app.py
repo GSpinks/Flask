@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, url_for, flash, redirect, abo
 # make a Flask application object called app
 app = Flask(__name__)
 app.config["DEBUG"] = True
-
+app.config['SECRET_KEY'] = 'your secret key'
 
 
 # Function to open a connection to the database.db file
@@ -18,7 +18,16 @@ def get_db_connection():
 
     #return the connection object
     return conn
+    
+def get_post(post_id):
+    conn = get_db_connection()
+    post = conn.execute('SELECT * FROM posts WHERE id = ?', (post_id,)).fetchone()
+    conn.close()
 
+    if post is None:
+        abort(404)
+
+    return post
 
 # use the app.route() decorator to create a Flask view function called index()
 @app.route('/')
